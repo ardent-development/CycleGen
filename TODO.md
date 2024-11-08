@@ -3,12 +3,15 @@
 ## CycleGen
 
 - [X] Test memthres flag
-- [ ] Revise Oopsie dialogs
+- [X] Revise Oopsie dialogs
 - [X] Test maxsteps flag
 - [X] Remove the autocompute flag and automatically detect if it's required
 - [X] Extend the autocompute system to include auto-calculation of step value based on start, end, and maxsteps
-- [ ] Create an offset flag (output var name numbers added to offset on StoPic)
-- [ ] Test offset flag
+- [X] Create an offset flag (output var name numbers added to offset on StoPic)
+- [X] Test offset flag
+- [X] Restructure the beginning of the script to make it more user-friendly
+- [X] Remove declarations of unused variables (oops)
+- [ ] Finish documentation
 
 ## CycleView
 

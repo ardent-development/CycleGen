@@ -22,7 +22,7 @@ entire modern 68k series (TI-89/Titanium, TI-92 Plus, and Voyage 200).
 It is called CycleGen because you're supposed to use the CyclePic command (built
 into the AMS) to display the generated frames as an animation after CycleGen is
 done rendering them. You can also use the companion program for CycleGen, called
-CycleView, to provide a more user-friendly graphical interface that lets you
+CycleView, to access a more user-friendly graphical interface that lets you
 play, pause, and dynamically adjust speed unlike CyclePic alone. Please see
 [Appendix B] for more info.
 
@@ -31,8 +31,7 @@ of flags (or leave the default ones alone) and let the program's internal code
 do the rest! Options include changing file/folder names, offloading storage to
 Flash memory if RAM fills up, keeping RAM free and writing every frame to Flash,
 or leaving the Flash array alone at all costs in order to ensure its longevity.
-Documentation for these flags can be found in [Appendix A], if you'd just like
-to jump to that immediately.
+Documentation for these flags can be found in [Appendix A].
 
 Error message dialogs are designed to be as user-friendly and descriptive as
 possible. In fact they are not even called errors, instead they are called
@@ -46,31 +45,65 @@ how many dimensions your graph has and what kinds of computations go on inside
 the loop/during computation of points on the graph.
 
 But even bearing a few computational limitations, I hope you'll find some good
-use of this program and discover new things about graphical functions on the
+use of this program and discover new things about graphs of functions on the
 tried and true TI-68k platform with CycleGen.
 
  - with passion, twisted_nematic57
 
 
 I. INSTALLATION
-Send ccg.89p to your calculator with your favorite linking software. There is no
- harm in keeping it archived, and in fact I recommend archiving it.
-Also, send flib.89z
 
+Send `ccg.89p` to your calculator with your favorite linking software. There is
+ no harm in keeping it archived, and in fact I recommend archiving it.
 It will be in its own folder "AAA" so that you can access it quickly from the
  VAR-LINK menu, but you can move it anywhere else you like and it should be
  fine.
 
+Also, send `flib.89z`. It is an open-source assembly subprogram that exposes an
+ interface to BASIC programs allowing manipulation of text in the calculator's
+ status line, which is made use of in the script.
+This variable MUST be in your `main` folder.
+If you wish to view its source code, unzip `flibsrc.zip` and have at it. :)
+
 
 II. USAGE
- * Copy the file into a different folder, like `main`. Name it something
-    interesting to ensure it isn't lost to the sands of time, and make sure the
-    copy isn't archived.
+
+ * Copy the file into a different folder, like `main`. Ensure it is not archived
+   (so you can edit it).
+
  * Open the newly copied file with the Program Editor.
- * The script's flag declarations will appear. Modify them as needed.
-    - Reference for the flags can be found in [Appendix 1].
- * Scroll down a couple lines until you see a comment saying "Init global vars
-    here".
-    - Just below that line, you can define your global variables (available to
-    the rest of the calculator rather than just the script) that will be used in
-    your animation.
+
+ * The script's flag definitions will appear. Modify them as needed.
+    - Reference for the flags can be found in [Appendix A].
+
+ * A few lines below the flag definitions you will find the definitions for the
+   start, step, and end flags. Modify them as needed.
+    - The start flag is a real number that signifies the initial definition of
+      the cycling variable in the script.
+       - The "cycling variable" is used by CycleGen's main internal loop; it
+         keeps track of when to stop cycling. Its name is recur and you may read
+         it in your looping code, but please do not modify it.
+    - The step flag is a real number that signifies the value that should be
+      added to the cycling variable at the beginning of each cycle, i.e. before
+      your own looping code is invoked.
+    - The end flag is a real number that signifies the point where CycleGen
+      should stop launching new cycles and wrap it up.
+    - You may leave ONE of the above flags undefined (by commenting out the line
+      it was defined on), and the script will automatically calculate the
+      missing piece.
+
+ * A couple of lines below the small hunk of code under the flag definitions,
+   you will find an area where you can define your global variables.
+    - These variables will be stored and operated on in the dedicated folder you
+      specified with the outfldr flag.
+    - The block of code in which you're supposed to define global variables is
+      only run once: at the start of the script.
+
+ * A few lines below the global variable definition area, you will find a
+   comment that says "Looping code goes here". Under that comment and before the
+   next hunk of code, you can place arbitrary TI-BASIC code that will be run on
+   each cycle.
+    - Do not modify the variables start, step, end, varcntr, recur, offset,
+      memp, fmem, memthres, allowarc, and forcearc.
+
+ * 
