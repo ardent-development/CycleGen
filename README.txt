@@ -1,15 +1,16 @@
-/*** CycleGen 1.0 *************************************************************\
+/*** CycleGen 1.1 *************************************************************\
  * Author: twisted_nematic57                                                  *
  * Special Thanks: Zeroko and Cemetech(.net)                                  *
- * Date: 11/09/2024 [MM-DD-YYYY]                                               *
+ * Date: 11/15/2024 [MM-DD-YYYY]                                              *
  * License: GNU GPLv3 (or later) - see LICENSE                                *
  * Product Type: Script Template                                              *
+ * Platform: TI-89 Titanium: TI-BASIC                                         *
 \******************************************************************************/
 
-CycleGen is a template TI-89 Titanium BASIC program that can be easily modified
-and run to produce beautiful animations of 2D and 3D graphs, sort of like how
-you can use a slider on Desmos to change a value and see the graph change with
-it.
+CycleGen is a template TI-89 Titanium BASIC program that is designed to be
+easily modified and run to produce beautiful animations of 2D and 3D graphs,
+sort of like how you can use a slider on Desmos to change a value and see the
+graph change with it.
 
 Since the program is a ready-to-go script that can be modified just as flexibly
 as any other TI-BASIC program, you can literally do anything within the main
@@ -26,7 +27,7 @@ done rendering them.
 To handle file saving and memory management, all you have to do is set a couple
 of flags (or leave the default ones alone) and let the program's internal code
 do the rest! Options include changing file/folder names and precise management
-of the use of the limited RAM and limited-write Flash chip.
+of the limited-capacity RAM and limited-write Flash chip.
 
 Error message dialogs are designed to be as user-friendly and descriptive as
 possible. In fact they are not even called errors, instead they are called
@@ -55,7 +56,7 @@ Send `ccg.89p` to your calculator with your favorite linking software. I
 It will be in its own folder "AAA" so that you can access it quickly from the
  VAR-LINK menu, but you can put it anywhere else you like and it should be fine.
 
-Also, send `Flib.89z`.
+Also, send `Flib.89z`. Leave it archived.
 It is an open-source assembly subprogram that exposes an interface to BASIC
  scripts allowing manipulation of text in the calculator's status line, which is
  made use of in CycleGen.
@@ -63,6 +64,7 @@ This variable MUST be in your `main` folder.
 If you wish to view its source code, unzip `flibsrc.zip` and have at it. :)
 The license included with Flib is in `flib-license`, and also inside the ZIP
  itself (in `GPL.txt`).
+
 
 II. DETAILS
 
@@ -73,11 +75,12 @@ II. DETAILS
    script by telling it how to manage memory, format output, etc. You also
    define global variables used in your own calculations.
  * The user-defined "looping code" is a chunk of TI-BASIC code that is executed
-   once per cycle, before graphing begins. ANYTHING that can be done in a
+   once per cycle before graphing begins. ANYTHING that can be done in a
    standalone BASIC script can be done in this loop, as long as it does not
-   modify CycleGen's internal variables. (See line 147 of this document.)
+   modify CycleGen's internal variables. (See line 152 of this document.)
  * After the user-defined looping code is done running, CycleGen makes the
    calculator regenerate the graph and save a screenshot.
+
 
 III. USAGE
 
@@ -107,31 +110,35 @@ III. USAGE
                   regardless of the amount of available RAM. Takes precedence
                   over `allowarc`.
     - `memthres`: A positive real integer (between 8192 and 192512, inclusive)
-                  that denotes the minimum amount of RAM, in kilobytes, the
-                  calculator must have free to begin the generation of cycles.
-                  As a general rule of thumb, one should have at least 8192K
-                  free to avoid running out of memory when saving frames or
-                  calculating points on the graph(s).
+                  that denotes the minimum amount of RAM, in kilobytes, that
+                  CycleGen must leave free after executing. As a general rule of
+                  thumb, one should have at least 8192K free to avoid running
+                  out of memory when saving frames or calculating points on the
+                  graph(s).
     - `maxsteps`: A positive real integer between 1 and 999 that signifies the
-                  maximum number of frames CycleGen will generate. This flag
-                  takes precedence over all other script-terminating flags, such
-                  as `end`.
+                  maximum number of frames CycleGen will generate.
 
- * A few lines below the flag definitions you will find the definitions for the
-   start, step, and end flags. Modify them as needed.
+ * Below the first block of flag definitions, you’ll find settings for the
+ `start`, `step`, and `end` flags. These control the behavior of the dynamic
+ variable, which progresses from the starting value to the ending value in
+ increments of `step`. Modify them as needed.
     - `start`: A real number that signifies the initial definition of the
-               cycling variable in the script.
-       - The "cycling variable" is used by CycleGen's main internal loop; it
-         keeps track of when to stop cycling. Its name is `recur` and you may
-         read it in your looping code, but please do not modify it.
+               dynamic variable in the script.
     - `step`: A real number that signifies the value that should be added to the
-              cycling variable at the beginning of each cycle, i.e. before your
+              dynamic variable at the beginning of each cycle, i.e. before your
               own looping code is invoked.
-    - `end`: A real number that signifies the point where CycleGen should stop
-             launching new cycles and wrap up.
+    - `end`: A real number that signifies the value of the dynamic variable at
+             the last rendered frame.
     - You may leave ONE of the above flags undefined (by commenting out the line
       it was defined on), and the script will automatically calculate the
       missing piece.
+    - The above flags are there only to make the script easier to use for you.
+      You still have the freedom to manipulate your own variables however you
+      like in your looping code. (See line 152 of this document to get to know
+      the few variable-related restrictions you have.)
+    - The dynamic variable starts from `start` + `step` (and not `start` itself)
+      because incrementation occurs before graphing. However, it will equal
+      `end` at the last frame.
 
  * A couple of lines below the small chunk of code under the flag definitions,
    you will find an area where you can define your global variables.
@@ -144,8 +151,8 @@ III. USAGE
    comment that says "Looping code goes here". Under that comment and before the
    next chunk of code, you can place arbitrary TI-BASIC code that will be run on
    each cycle.
-    - Do not modify the variables `start`, `step`, `end`, `varcntr`, `recur`,
-      `memp`, `fmem`, `memthres`, `allowarc`, and `forcearc`.
+    - Do not modify the variables `start`, `step`, `end`, `recur`, `memp`,
+      `fmem`, `memthres`, `overwprev`, `allowarc`, `forcearc`, and `maxsteps`.
 
  * Go back to the Home Screen and execute the modified version of CycleGen you
    just closed. To fully initialize, CycleGen will take a couple seconds, and
@@ -171,6 +178,7 @@ III. USAGE
                     beginning.
     - You can press the ON key at any time during playback of the animation to
       stop it.
+
 
 IV. EXAMPLE
 
@@ -213,3 +221,18 @@ exits.
 Other examples may be found in the `examples` directory. They are in the form
 of video files showing off the content of the scripts, then generating and
 playing back the animations.
+
+
+V. CHANGELOG (LATEST-FIRST)
+
+ * CycleGen 1.1: Bugfixes
+    - CODE [#1]: Rework the core `for(` loop to work on internally defined
+                 integers instead of user-defined floats.
+    - DOC: Revise formatting and informational errors in documentation (mostly
+           relating to the header and `memthres` flag's behavior)
+    - DOC: Add more info about `start`,`step`,`end` flags and clarify their
+           behavior
+    - CODE: Automatically delete `start`,`step`,`end` flags upon initialization
+            (fixes issues with re-runs after incomplete runs)
+
+ * CycleGen 1.0: Initial release
