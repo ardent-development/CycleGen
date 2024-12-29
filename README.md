@@ -1,4 +1,5 @@
-<img src="logo.png" width="400" style="image-rendering: pixelated;">
+<img src="logo.png" width="400" style="image-rendering: -moz-crisp-edges;image-rendering: -moz-crisp-edges;image-rendering: -o-crisp-edges;image-rendering: -webkit-optimize-contrast;-ms-interpolation-mode: nearest-neighbor;
+">
 
 CycleGen is the most powerful graphical animation generator for any calculator out there. Supports 2D, 3D, parametric, polar, sequence, and differential graphs. It's designed specifically for the renowned TI-89 Titanium, and makes it easy to take full advantage of its vast memory. See [README_CYCLEGEN.txt](README_CYCLEGEN.txt) for information on how to use it.
 
