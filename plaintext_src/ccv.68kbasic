@@ -68,7 +68,7 @@ While true
   ElseIf replay=1 Then 
    npicstrt→picn
   ElseIf replay=­1 Then 
-   ­move→move
+   -­move→move
    picn+move→picn
   EndIf
  EndIf

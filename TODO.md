@@ -26,6 +26,9 @@
 - [X] Add a GitHub-specific README, show off the logo
 - [X] Add source code in plaintext form
 - [X] ~~Make some examples~~ (test while you're at it)
+- [X] Post-test: move variable overwriting code back a few blocks to avoid illogical clash with fillmem flag's effects
+- [X] Post-test: make the buffer bigger in the fillmem flag's logic
+- [X] Release CycleGen 2.0
 
 ## CycleView
 

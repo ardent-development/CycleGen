@@ -1,4 +1,4 @@
-ccg()
+()
 Prgm
 Local recur,fldinitd,outfldr,varprfx,ovrwprev,allowarc,forcearc,fillmem,memthres,arcthres,immstate,memp,arcp,fmem,farc,maxsteps,looping,err:0→fldinitd:0→looping:0→err
 main\flib("slmsg:Starting CycleGen 2.0")
@@ -8,7 +8,7 @@ main\flib("slmsg:Starting CycleGen 2.0")
 "ctmp"→outfldr
 "p"→varprfx
 1→ovrwprev
-1→allowarc
+0→allowarc
 0→forcearc
 0→fillmem
 8192→memthres
@@ -35,11 +35,13 @@ If looping=0 Then:Goto noloop:EndIf:Lbl loopc
 
 
 
+
 If looping=1 Then:Goto postloop:EndIf:Lbl noloop
 
 
 
-©↓ Script internals belowmain\flib("slmsg:Beginning initialization ")
+©↓ Script internals below
+main\flib("slmsg:Beginning initialization...")
 
 Lbl dofldch
 If fldinitd=1 Then
@@ -55,65 +57,7 @@ EndTry
 Goto cont
 Lbl skpfldch
 
-main\flib("slmsg:Getting RAM info ")
-getConfg()→immstate
-For recur,dim(immstate),1,­1
- If immstate[recur]="Free RAM" Then
-  recur+1→memp
-  Exit
- EndIf
-EndFor
-immstate[memp]→fmem
-memp+4→arcp
-immstate[arcp]→farc
-
-If fmem<8192 Then
- Dialog
-  Title "CycleGen Oopsie #1"
-  Text "Please free up some RAM"
-  Text ""
-  Text "(At least 8192B required to start)"
-  Text "(You currently have "&string(fmem)&"K free)"
- EndDlog
- 1→err
- Goto quit
-EndIf
-
-main\flib("slmsg:Calculating memory management stuff ")
-If fillmem=1 Then
- If allowarc=0 Then
-  iPart((fmem-memthres)/1547)-1→maxsteps
- Else
-  iPart((fmem-memthres+farc-arcthres)/1547)-1→maxsteps
- EndIf
-
- If forcearc=1 Then
-  iPart((farc-arcthres)/1547)-1→maxsteps
- EndIf
-EndIf
-
-If maxstepsœ1 Then
- Dialog
-  Title "CycleGen Oopsie #2"
-  Text "maxsteps is œ 1"
-  Text ""
-  Text "(Try increasing it)"
-  Text "(Or setting fillmem=0)"
- EndDlog
- 2→err
- Goto quit
-EndIf
-
-main\flib("slmsg:Autocomputing start/step/end ")
-If not isVar(end) Then
- start+step*maxsteps→end
-ElseIf not isVar(step) Then
- (end-start)/maxsteps→step
-ElseIf not isVar(start) Then
- end-step*maxsteps→start
-EndIf
-
-main\flib("slmsg:Managing conflicting variables ")
+main\flib("slmsg:Managing conflicting variables...")
 If ovrwprev=0 Then
  For recur,1,maxsteps
   If isVar(#(varprfx&string(recur))) Then
@@ -137,6 +81,64 @@ Else
    DelVar #(varprfx&string(recur))
   EndIf
  EndFor
+EndIf
+
+main\flib("slmsg:Getting RAM info...")
+getConfg()→immstate
+For recur,dim(immstate),1,­1
+ If immstate[recur]="Free RAM" Then
+  recur+1→memp
+  Exit
+ EndIf
+EndFor
+immstate[memp]→fmem
+memp+4→arcp
+immstate[arcp]→farc
+
+If fmem<8192 Then
+ Dialog
+  Title "CycleGen Oopsie #1"
+  Text "Please free up some RAM"
+  Text ""
+  Text "(At least 8192B required to start)"
+  Text "(You currently have "&string(fmem)&"K free)"
+ EndDlog
+ 1→err
+ Goto quit
+EndIf
+
+main\flib("slmsg:Calculating memory management stuff...")
+If fillmem=1 Then
+ If allowarc=0 Then
+  iPart((fmem-memthres)/1547)-2→maxsteps
+ Else
+  iPart((fmem-memthres+farc-arcthres)/1547)-2→maxsteps
+ EndIf
+
+ If forcearc=1 Then
+  iPart((farc-arcthres)/1547)-2→maxsteps
+ EndIf
+EndIf
+
+If maxsteps≥1 Then
+ Dialog
+  Title "CycleGen Oopsie #2"
+  Text "maxsteps is ≥ 1"
+  Text ""
+  Text "(Try increasing it)"
+  Text "(Or setting fillmem=0)"
+ EndDlog
+ 2→err
+ Goto quit
+EndIf
+
+main\flib("slmsg:Autocomputing start/step/end...")
+If not isVar(end) Then
+ start+step*maxsteps→end
+ElseIf not isVar(step) Then
+ (end-start)/maxsteps→step
+ElseIf not isVar(start) Then
+ end-step*maxsteps→start
 EndIf
 
 1→looping
@@ -211,7 +213,7 @@ If err=0 Then
 ElseIf err=1 Then
  main\flib("slmsg:Aborted CycleGen 2.0: memory error")
 ElseIf err=2 Then
- main\flib("slmsg:Aborted CycleGen 2.0: maxsteps œ1")
+ main\flib("slmsg:Aborted CycleGen 2.0: maxsteps ≤1")
 EndIf
 
 DelVar fl
