@@ -1,0 +1,82 @@
+ccv(picprfx,npicstrt,npicend,replay)
+Prgm
+©picprfx,npicstrt,npicend,replay
+ - picprfx: folder\prefix
+ - npicstrt: starting pic #
+ - npicend: ending pic #
+ - replay: end-of-sequence behaviour
+
+Local picprfx,npicstrt,npicend,replay,picn,picstr,move,k
+
+DispG
+npicstrt→picn
+1→move
+main\flib("slmsg:Playing animation...")
+
+While true
+ getKey()→k
+
+ If k≠0 Then 
+ ©↓ Left\Right
+ If k=337 or k=340 Then 
+  picn-move→picn
+  main\flib("slmsg:"&picprfx&string(picn))
+
+  While true
+   getKey()→k
+
+   ©↓ Left
+   If k=337 Then 
+    If picn>npicstrt Then 
+     picn-1→picn
+     picprfx&string(picn)→picstr
+     RplcPic #picstr
+     main\flib("slmsg:"&picstr)
+    EndIf
+
+   ©↓ Right
+   ElseIf k=340 Then 
+    If picn<npicend Then 
+     picn+1→picn
+     picprfx&string(picn)→picstr
+     RplcPic #picstr
+     main\flib("slmsg:"&picstr)
+    EndIf
+
+   ©↓ Escape
+   ElseIf k=264 Then 
+    main\flib("slmsg:Playing animation...")
+    Exit
+
+   ©↓ Clear\Home
+   ElseIf k=263 or k=277 Then 
+    DispHome
+    Goto quit
+   EndIf
+  EndWhile
+
+ ©↓ Clear\Home
+ ElseIf k=263 or k=277 Then 
+  DispHome
+  Goto quit
+ EndIf
+ EndIf
+
+ If picn=npicstrt-1 or picn=npicend+1 Then 
+  If replay=0 Then 
+   Goto quit
+  ElseIf replay=1 Then 
+   npicstrt→picn
+  ElseIf replay=­1 Then 
+   ­move→move
+   picn+move→picn
+  EndIf
+ EndIf
+
+ RplcPic #(picprfx&string(picn))
+ picn+move→picn
+EndWhile
+
+Lbl quit
+main\flib("slmsg:Thanks for using CycleView 2.0")
+EndPrgm

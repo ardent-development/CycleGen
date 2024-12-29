@@ -1,0 +1,218 @@
+ccg()
+Prgm
+Local recur,fldinitd,outfldr,varprfx,ovrwprev,allowarc,forcearc,fillmem,memthres,arcthres,immstate,memp,arcp,fmem,farc,maxsteps,looping,err:0→fldinitd:0→looping:0→err
+main\flib("slmsg:Starting CycleGen 2.0")
+
+
+© Script flags
+"ctmp"→outfldr
+"p"→varprfx
+1→ovrwprev
+1→allowarc
+0→forcearc
+0→fillmem
+8192→memthres
+8192→arcthres
+50→maxsteps
+
+
+©↓ Continue below this
+Goto dofldch:Lbl cont:1→fldinitd:DelVar start,step,end
+
+
+0→start
+©1→step
+5→end
+
+
+© Init global vars here
+
+
+
+If looping=0 Then:Goto noloop:EndIf:Lbl loopc
+
+© Looping code goes here
+
+
+
+If looping=1 Then:Goto postloop:EndIf:Lbl noloop
+
+
+
+©↓ Script internals belowmain\flib("slmsg:Beginning initialization ")
+
+Lbl dofldch
+If fldinitd=1 Then
+ Goto skpfldch
+EndIf
+
+Try
+ NewFold #outfldr
+Else
+ ClrErr
+ setFold(#outfldr)
+EndTry
+Goto cont
+Lbl skpfldch
+
+main\flib("slmsg:Getting RAM info ")
+getConfg()→immstate
+For recur,dim(immstate),1,­1
+ If immstate[recur]="Free RAM" Then
+  recur+1→memp
+  Exit
+ EndIf
+EndFor
+immstate[memp]→fmem
+memp+4→arcp
+immstate[arcp]→farc
+
+If fmem<8192 Then
+ Dialog
+  Title "CycleGen Oopsie #1"
+  Text "Please free up some RAM"
+  Text ""
+  Text "(At least 8192B required to start)"
+  Text "(You currently have "&string(fmem)&"K free)"
+ EndDlog
+ 1→err
+ Goto quit
+EndIf
+
+main\flib("slmsg:Calculating memory management stuff ")
+If fillmem=1 Then
+ If allowarc=0 Then
+  iPart((fmem-memthres)/1547)-1→maxsteps
+ Else
+  iPart((fmem-memthres+farc-arcthres)/1547)-1→maxsteps
+ EndIf
+
+ If forcearc=1 Then
+  iPart((farc-arcthres)/1547)-1→maxsteps
+ EndIf
+EndIf
+
+If maxstepsœ1 Then
+ Dialog
+  Title "CycleGen Oopsie #2"
+  Text "maxsteps is œ 1"
+  Text ""
+  Text "(Try increasing it)"
+  Text "(Or setting fillmem=0)"
+ EndDlog
+ 2→err
+ Goto quit
+EndIf
+
+main\flib("slmsg:Autocomputing start/step/end ")
+If not isVar(end) Then
+ start+step*maxsteps→end
+ElseIf not isVar(step) Then
+ (end-start)/maxsteps→step
+ElseIf not isVar(start) Then
+ end-step*maxsteps→start
+EndIf
+
+main\flib("slmsg:Managing conflicting variables ")
+If ovrwprev=0 Then
+ For recur,1,maxsteps
+  If isVar(#(varprfx&string(recur))) Then
+   Dialog
+    Title "CycleGen Oopsie #3"
+    Text "Please delete your old pics"
+    Text ""
+    Text "(ovrwprev=0)"
+    Text "(Found: "&outfldr&"\"&varprfx&string(recur)&")"
+    Text ""
+    Text "(Alternatively, change varprfx)"
+   EndDlog
+   1→err
+   Goto quit
+  EndIf
+ EndFor
+Else
+ For recur,1,maxsteps
+  If isVar(#(varprfx&string(recur))) Then
+   Unarchiv #(varprfx&string(recur))
+   DelVar #(varprfx&string(recur))
+  EndIf
+ EndFor
+EndIf
+
+1→looping
+For recur,1,maxsteps
+ main\flib("slmsg:Rendering frame "&string(recur)&"/"&string(maxsteps))
+ 
+ Goto loopc
+ Lbl postloop
+ 
+ DispG
+ StoPic #(varprfx&string(recur))
+ getConfg()→immstate
+ immstate[memp]→fmem
+ If fmem<memthres Then
+  If allowarc=1 Then
+   Try
+    Archive #(varprfx&string(recur))
+   Else
+    ClrErr
+    Dialog
+     Title "CycleGen Oopsie #4"
+     Text "Could not archive variable"
+     Text ""
+     Text "(Try freeing up some space)"
+     Text "(Or replace your batteries)"
+    EndDlog
+    1→err
+    Goto quit
+   EndTry
+  Else
+   Dialog
+    Title "CycleGen Oopsie #5"
+    Text "Out of RAM"
+    Text ""
+    Text "(Set allowarc=1)"
+    Text "(Or free up some RAM)"
+   EndDlog
+   1→err
+   Goto quit
+  EndIf
+ EndIf
+ 
+ If forcearc=1 Then
+  If not isArchiv(#(varprfx&string(recur))) Then
+   Try
+    Archive #(varprfx&string(recur))
+   Else
+    ClrErr
+    Dialog
+     Title "CycleGen Oopsie #6"
+     Text "Could not archive variable"
+     Text ""
+     Text "(Try freeing up some space)"
+     Text "(Or replace your batteries)"
+    EndDlog
+    1→err
+    Goto quit
+   EndTry
+  EndIf
+ EndIf
+EndFor
+
+
+Lbl quit
+
+DelVar fl,start,step,end
+setFold(main)
+DispHome
+
+If err=0 Then
+ main\flib("slmsg:Done! Thanks for using CycleGen 2.0")
+ElseIf err=1 Then
+ main\flib("slmsg:Aborted CycleGen 2.0: memory error")
+ElseIf err=2 Then
+ main\flib("slmsg:Aborted CycleGen 2.0: maxsteps œ1")
+EndIf
+
+DelVar fl
+EndPrgm
