@@ -1,3 +1,6 @@
+# NOTICE: Moved to [AMS++](https://github.com/ardent-development/AMSPlusPlus/tree/main/ccg_and_ccv)
+---
+
 ![CycleGen Logo](logo.png "CycleGen Logo")
 
 CycleGen is the most powerful graphical animation generator for the TI-89 Titanium. Supports 2D, 3D, parametric, polar, sequence, and differential graphs. It can easily take full advantage of all available memory. See [README_CYCLEGEN.txt](README_CYCLEGEN.txt) for information on how to use it.
